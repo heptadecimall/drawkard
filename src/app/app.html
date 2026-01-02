@@ -1,0 +1,69 @@
+<div class="dot-bg min-h-screen">
+  <div class="container mx-auto min-h-screen py-20 flex flex-col justify-center items-center">
+    <div class="flex flex-col items-center justify-center">
+      <div class=" flex flex-col md:flex-row justify-center items-center mb-4">
+        <div *ngIf="!cardData" class="w-60 h-83">
+          <div
+            class="checkerboard-bg rounded-xl overflow-hidden shadow-lg flex justify-center items-center border border-gray-400">
+            <button
+              class="border border-gray-400 text-gray-500 rounded-md bg-gray-100 py-2 px-4 cursor-pointer hover:bg-gray-200"
+              (click)="fetchRandomCard()">
+              Draw a Kard
+            </button>
+          </div>
+        </div>
+        <div>
+          <div *ngIf="cardData" class="flex flex-col md:flex-row items-center gap-4 ">
+            <div class="flex flex-col justify-center items-center gap-2 ">
+              <div>
+                <p class="text-left text-gray-500 font-semibold">#{{cardData?.collector_number}}</p>
+              </div>
+              <div class="w-60 h-83 bg-white rounded-xl overflow-hidden shadow-lg ">
+                <img class=" rounded shadow" [src]="cardData?.image_uris?.normal" [alt]="cardData?.name">
+              </div>
+              <button *ngIf="cardData"
+                class="border border-gray-400 text-gray-500 rounded-md bg-gray-100 py-2 px-4 cursor-pointer hover:bg-gray-200 hidden md:block "
+                (click)="fetchRandomCard()">
+                Redraw a kard
+              </button>
+            </div>
+            <div class="border border-gray-400 rounded-lg bg-white/10 backdrop-blur-sm p-4 w-90 shadow-lg ">
+              <div class="flex justify-between">
+                <h2 class="font-bold">{{cardData?.name}}</h2>
+                <div *ngIf="symbolData" class="flex flex-row gap-1">
+                  @for (symbol of mappedSymbols(cardData?.mana_cost || ''); track symbol) {
+                  <img [src]="symbol?.svg_uri" [alt]="symbol?.symbol" class="w-4 h-auto">
+                  }
+                </div>
+              </div>
+              <h2 *ngIf="cardData?.type_line">{{cardData?.type_line}}</h2>
+              <hr class="border-gray-400 my-2">
+              <p>{{cardData?.oracle_text}}</p>
+              <div *ngIf="cardData?.power || cardData?.toughness">
+                <p class="text-right">{{cardData?.power || '0'}}/{{cardData?.toughness || '0'}}</p>
+                <hr class="border-gray-400 my-2 ">
+              </div>
+              <div *ngIf="cardData?.flavor_text">
+                <p class="italic mb-4">{{cardData?.flavor_text}}</p>
+                <hr class="border-gray-400 my-2 ">
+              </div>
+              <div>
+                <p class="text-sm">[{{cardData?.set | uppercase}}] {{cardData?.set_name}}</p>
+                <hr class="border-gray-400 my-2">
+              </div>
+              <div>
+                <p class="text-xs text-right">Illustrated by {{cardData?.artist}} </p>
+                <hr class="border-gray-400 my-2">
+              </div>
+              <p class="text-xs  text-right">{{cardData?.rarity |titlecase}} - {{'$ '+ cardData?.prices?.usd || 'n/a'}}
+              </p>
+            </div>
+            <button *ngIf="cardData"
+              class="border border-gray-400 text-gray-500 rounded-md bg-gray-100 py-2 px-4 cursor-pointer hover:bg-gray-200 md:hidden lg:hidden  xl:hidden"
+              (click)="fetchRandomCard()">
+              Redraw a kard
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
