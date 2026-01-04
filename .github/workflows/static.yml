@@ -1,0 +1,42 @@
+name: Deploy Angular to Pages
+
+on:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Or your preferred version
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        # Replace 'your-repo-name' with your actual GitHub repository name
+        run: npm run build -- --base-href=/drawkard/
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Point this to your actual build output folder
+          path: './dist/your-project-name/browser'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
