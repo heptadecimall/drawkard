@@ -1,16 +1,21 @@
-name: Deploy Angular to Pages
+name: Deploy Angular to Pages 2
 
 on:
   push:
     branches: ["main"]
+  workflow_dispatch:
 
 permissions:
   contents: read
   pages: write
   id-token: write
 
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -19,24 +24,29 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20' # Or your preferred version
+          node-version: '20'
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
       - name: Build
-        # Replace 'your-repo-name' with your actual GitHub repository name
-        run: npm run build -- --base-href=/drawkard/
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
+        # replace 'your-repo-name' with your repository name
+        run: npm run build -- --configuration production --base-href /drawkard/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Point this to your actual build output folder
-          path: './dist/your-project-name/browser'
+          # replace 'your-project-name' with the name from angular.json
+          path: './dist/drawkard/browser'
 
+  deploy:
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
