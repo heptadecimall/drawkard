@@ -31,13 +31,11 @@ jobs:
         run: npm ci
 
       - name: Build
-        # replace 'your-repo-name' with your repository name
         run: npm run build -- --configuration production --base-href /drawkard/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # replace 'your-project-name' with the name from angular.json
           path: './dist/drawkard/browser'
 
   deploy:
