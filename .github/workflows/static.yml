@@ -31,7 +31,7 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: npm run build -- --configuration production 
+        run: npm run build -- --configuration production --base-href /drawkard/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
