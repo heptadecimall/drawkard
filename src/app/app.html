@@ -17,7 +17,7 @@
                   [style.transform]="isFlipped ? 'rotateY(180deg) rotateX(10deg)' : 'rotateY(0deg)'">
                   <img *ngIf="cardData" class=" rounded shadow relative"
                     [src]="displayImageUrl || getFlippedCard()?.image_uris?.normal" [alt]="cardData?.name"
-                    (load)="onImageLoad()">
+                    (load)="onImageLoad()" [style.transform]="isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'">
                   <svg *ngIf="isLoading" class="animate-spin absolute top-35 left-22" width="64px" height="64px"
                     viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg"
                     xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/"
@@ -128,32 +128,32 @@
             <!-- card description panel -->
             <div *ngIf="cardData"
               class="border border-gray-400 rounded-lg bg-white/10 backdrop-blur-sm p-4 w-full max-w-90 shadow-lg ">
-              <p class="text-left text-gray-500 font-semibold">#{{cardData?.collector_number}}</p>
+              <p class="text-left text-gray-500 font-semibold">#{{cardData?.collector_number || 'n/a'}}</p>
               <div class="flex justify-between">
-                <h2 class="font-bold">{{getFlippedCard()?.name}}</h2>
+                <h2 class="font-bold">{{getFlippedCard()?.name|| 'n/a'}}</h2>
                 <div *ngIf="symbolData" class="flex flex-row gap-1">
                   @for (symbol of mappedSymbols(getFlippedCard()?.mana_cost || ''); track symbol) {
                   <img [src]="symbol?.svg_uri" [alt]="symbol?.symbol" class="w-4 h-auto">
                   }
                 </div>
               </div>
-              <h2 *ngIf="getFlippedCard()?.type_line">{{getFlippedCard()?.type_line}}</h2>
+              <h2 *ngIf="getFlippedCard()?.type_line">{{getFlippedCard()?.type_line|| 'n/a'}}</h2>
               <hr class="border-gray-400 my-2">
-              <p>{{getFlippedCard()?.oracle_text}}</p>
+              <p>{{getFlippedCard()?.oracle_text|| 'n/a'}}</p>
               <div *ngIf="getFlippedCard()?.power || getFlippedCard()?.toughness">
                 <p class="text-right">{{getFlippedCard()?.power || '0'}}/{{getFlippedCard()?.toughness || '0'}}</p>
                 <hr class="border-gray-400 my-2 ">
               </div>
               <div *ngIf="getFlippedCard()?.flavor_text">
-                <p class="italic mb-4">{{getFlippedCard()?.flavor_text}}</p>
+                <p class="italic mb-4">{{getFlippedCard()?.flavor_text|| 'n/a'}}</p>
                 <hr class="border-gray-400 my-2 ">
               </div>
               <div>
-                <p class="text-sm">[{{cardData?.set | uppercase}}] {{cardData?.set_name}}</p>
+                <p class="text-sm">[{{cardData?.set | uppercase}}] {{cardData?.set_name|| 'n/a'}}</p>
                 <hr class="border-gray-400 my-2">
               </div>
               <div>
-                <p class="text-xs text-right">Illustrated by {{cardData?.artist}} </p>
+                <p class="text-xs text-right">Illustrated by {{cardData?.artist|| 'n/a'}} </p>
                 <hr class="border-gray-400 my-2">
               </div>
               <p class="text-xs  text-right">{{cardData?.rarity |titlecase}} - {{'$ '+ cardData?.prices?.usd ||

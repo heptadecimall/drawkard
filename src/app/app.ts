@@ -2,6 +2,8 @@ import { Component, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { from, of } from 'rxjs';
+import { concatMap, delay } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -43,18 +45,26 @@ export class App {
 
 
   ngOnInit() {
-    this.initializeData('symbology', 'symbolData', () => this.fetchSymbology());
-    this.initializeData('cardType', 'cardTypeData', () => this.fetchCatalogTypes('card'));
-    this.initializeData('artifactType', 'artifactTypeData', () => this.fetchCatalogTypes('artifact'));
-    this.initializeData('battleType', 'battleTypeData', () => this.fetchCatalogTypes('battle'));
-    this.initializeData('creatureType', 'creatureTypeData', () => this.fetchCatalogTypes('creature'));
-    this.initializeData('enchantmentType', 'enchantmentTypeData', () => this.fetchCatalogTypes('enchantment'));
-    this.initializeData('landType', 'landTypeData', () => this.fetchCatalogTypes('land'));
-    this.initializeData('planeswalkerType', 'planeswalkerTypeData', () => this.fetchCatalogTypes('planeswalker'));
-    this.initializeData('spellType', 'spellTypeData', () => this.fetchCatalogTypes('spell'));
-    this.initializeData('keywordAbility', 'keywordAbilityData', () => this.fetchKeywordAbilities());
-    this.initializeData('keywordAction', 'keywordActionData', () => this.fetchKeywordActions());
-    this.initializeData('abilityWord', 'abilityWordData', () => this.fetchAbilityWords());
+
+    const tasks = [
+      () => this.initializeData('symbology', 'symbolData', () => this.fetchSymbology()),
+      () => this.initializeData('cardType', 'cardTypeData', () => this.fetchCatalogTypes('card')),
+      () => this.initializeData('artifactType', 'artifactTypeData', () => this.fetchCatalogTypes('artifact')),
+      () => this.initializeData('battleType', 'battleTypeData', () => this.fetchCatalogTypes('battle')),
+      () => this.initializeData('creatureType', 'creatureTypeData', () => this.fetchCatalogTypes('creature')),
+      () => this.initializeData('enchantmentType', 'enchantmentTypeData', () => this.fetchCatalogTypes('enchantment')),
+      () => this.initializeData('landType', 'landTypeData', () => this.fetchCatalogTypes('land')),
+      () => this.initializeData('planeswalkerType', 'planeswalkerTypeData', () => this.fetchCatalogTypes('planeswalker')),
+      () => this.initializeData('spellType', 'spellTypeData', () => this.fetchCatalogTypes('spell')),
+      () => this.initializeData('keywordAbility', 'keywordAbilityData', () => this.fetchKeywordAbilities()),
+      () => this.initializeData('keywordAction', 'keywordActionData', () => this.fetchKeywordActions()),
+      () => this.initializeData('abilityWord', 'abilityWordData', () => this.fetchAbilityWords())
+    ];
+
+    from(tasks).pipe(
+      concatMap(task => of(task()).pipe(delay(2000)))
+    ).subscribe();
+
   }
 
   // allow efficient fetch 
