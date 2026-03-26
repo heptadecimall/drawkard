@@ -4,10 +4,11 @@ import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { from, of } from 'rxjs';
 import { concatMap, delay } from 'rxjs/operators';
+import { ImageViewerComponent } from './image-viewer/image-viewer';
 
 @Component({
   selector: 'app-root',
-  imports: [CommonModule],
+  imports: [CommonModule, ImageViewerComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
@@ -37,11 +38,21 @@ export class App {
   selectedLandType!: string;
   selectedPlaneswalkerType!: string;
   selectedSpellType!: string;
+  selectedManaColors: any[] = []
 
   isFlipped: boolean = true;
   rotationDeg = 0;
   isLoading: boolean = false;
   displayImageUrl: string = '';
+  colorManaData = [
+    { color: 'White', code: '{W}' },
+    { color: 'Blue', code: '{U}' },
+    { color: 'Black', code: '{B}' },
+    { color: 'Red', code: '{R}' },
+    { color: 'Green', code: '{G}' },
+    { color: 'Colorless', code: '{C}' }
+  ]
+  showImageViewer: boolean = false;
 
 
   ngOnInit() {
@@ -84,6 +95,7 @@ export class App {
     this.isLoading = true;
     this.isFlipped = false;
     this.rotationDeg = 0;
+
     this.http.get<any>(`https://api.scryfall.com/cards/random${this.getURLQuery()}`).subscribe({
       next: (res) => {
         this.cardData = res;
@@ -184,22 +196,38 @@ export class App {
     this.selectedSpellType = ''
   }
 
-  getURLQuery() {
+  getURLQuery(): string {
+    const parts: string[] = [];
 
-    const otherFilter = this.selectedArtifactType ||
+    // 1. Handle Card Type
+    if (this.selectedCardType) {
+      parts.push(`t:${encodeURIComponent(this.selectedCardType)}`);
+    }
+
+    // 2. Handle Sub-Types (Artifact, Creature, etc.)
+    // We use || to find the first truthy value among the specific type filters
+    const specificType = this.selectedArtifactType ||
       this.selectedBattleType ||
       this.selectedCreatureType ||
       this.selectedEnchantmentType ||
       this.selectedLandType ||
       this.selectedPlaneswalkerType ||
-      this.selectedSpellType ||
-      '';
+      this.selectedSpellType;
 
-    if (otherFilter) {
-      return `?q=t:${encodeURIComponent(this.selectedCardType)}%20t:${encodeURIComponent(otherFilter)}`
-    } else {
-      return `?q=t:${encodeURIComponent(this.selectedCardType)}`
+    if (specificType) {
+      parts.push(`t:${encodeURIComponent(specificType)}`);
     }
+
+    // 3. Handle Mana Colors
+    if (this.selectedManaColors?.length > 0) {
+      const codes = this.selectedManaColors
+        .map(item => item.code.replace(/[{}]/g, ''))
+        .join('');
+      parts.push(`c:${codes}`);
+    }
+
+    // Final Assembly
+    return parts.length > 0 ? `?q=${parts.join('+')}` : '';
   }
 
   isDoubleSidedCard() {
@@ -242,5 +270,31 @@ export class App {
     }
     console.log('displayImageUrl', this.displayImageUrl);
 
+  }
+
+  selectColorMana(raw: any) {
+    const isAlreadySelected = this.selectedManaColors.some(item => item.code === raw.code);
+
+    if (isAlreadySelected) {
+      this.selectedManaColors = this.selectedManaColors.filter(item => item.code !== raw.code);
+    } else {
+      this.selectedManaColors.push(raw);
+    }
+
+  }
+
+  clearColorSelections() {
+    this.selectedManaColors = [];
+  }
+
+  clickCard() {
+    this.showImageViewer = true;
+    console.log('yes');
+
+  }
+
+  closeImageViewer() {
+    this.showImageViewer = false;
+    document.body.style.overflow = 'auto';
   }
 }
