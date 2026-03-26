@@ -54,7 +54,9 @@ export class App {
     { color: 'Colorless', code: '{C}' }
   ]
   showImageViewer: boolean = false;
-
+  isCooldown: boolean = false;
+  cooldownSeconds: number = 0;
+  private cooldownInterval: any;
 
   ngOnInit() {
 
@@ -104,6 +106,9 @@ export class App {
   }
 
   fetchRandomCard() {
+    // 1. If already in cooldown, stop the function
+    if (this.isCooldown) return;
+
     this.cardData = null;
     this.isLoading = true;
     this.isFlipped = false;
@@ -113,6 +118,8 @@ export class App {
       next: (res) => {
         this.cardData = res;
         this.updateDisplayImage()
+        // 3. Start the 5-second cooldown after a successful draw
+        this.startCooldown();
       },
       error: (err) => console.error(`Error fetching card data: ${err}`),
       complete: () => console.log('Successfully fetching card data.')
@@ -309,5 +316,22 @@ export class App {
   closeImageViewer() {
     this.showImageViewer = false;
     document.body.style.overflow = 'auto';
+  }
+
+  startCooldown() {
+    this.isCooldown = true;
+    this.cooldownSeconds = 15;
+
+    // Clear any existing interval just in case
+    if (this.cooldownInterval) clearInterval(this.cooldownInterval);
+
+    this.cooldownInterval = setInterval(() => {
+      this.cooldownSeconds--;
+
+      if (this.cooldownSeconds <= 0) {
+        this.isCooldown = false;
+        clearInterval(this.cooldownInterval);
+      }
+    }, 1000);
   }
 }

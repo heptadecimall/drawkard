@@ -103,8 +103,11 @@
         <!-- draw btn on mobile screen -->
         <button
           class="border border-gray-400 text-gray-500 rounded-md bg-gray-100 py-2 px-4 cursor-pointer hover:bg-gray-200 "
-          (click)="fetchRandomCard()">
-          Draw a kard
+          [style.background-color]="isCooldown || isLoading ? '#bbbbbb' : '#f3f4f6'"
+          [style.color]="isCooldown || isLoading ? '#777777' : '#6b7280'"
+          [style.cursor]="isCooldown || isLoading ? 'not-allowed' : 'pointer'" (click)="fetchRandomCard()">
+          <span *ngIf="!isCooldown">Draw a kard</span>
+          <span *ngIf="isCooldown">Wait {{ cooldownSeconds }}s...</span>
         </button>
         <!-- rotate card btn -->
         <button *ngIf="cardData"
