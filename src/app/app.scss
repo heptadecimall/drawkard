@@ -22,3 +22,46 @@ background-color: #ffffff; /* The 'bg-white' part */
   font-weight: 400;
   font-style: normal;
 }
+
+.card-wrapper {
+  position: relative;
+  perspective: 1000px;
+}
+
+/* Invisible Hit Zones */
+.hover-zone {
+  position: absolute;
+  width: 50%; height: 50%;
+  z-index: 20;
+}
+.top-left { top: 0; left: 0; }
+.top-right { top: 0; right: 0; }
+.bottom-left { bottom: 0; left: 0; }
+.bottom-right { bottom: 0; right: 0; }
+
+.flip-container {
+  width: 100%; height: 100%;
+  transform-style: preserve-3d;
+}
+
+.tilt-box {
+  width: 100%; height: 100%;
+  transition: transform 0.3s ease-out;
+  transform-style: preserve-3d;
+}
+
+/* --- THE TILT LOGIC --- */
+/* We target the .tilt-box specifically so it doesn't fight the .flip-container */
+
+.top-left:hover ~ .flip-container .tilt-box { 
+  transform: rotateX(10deg) rotateY(-10deg) scale(1.05); 
+}
+.top-right:hover ~ .flip-container .tilt-box { 
+  transform: rotateX(10deg) rotateY(10deg) scale(1.05); 
+}
+.bottom-left:hover ~ .flip-container .tilt-box { 
+  transform: rotateX(-10deg) rotateY(-10deg) scale(1.05); 
+}
+.bottom-right:hover ~ .flip-container .tilt-box { 
+  transform: rotateX(-10deg) rotateY(10deg) scale(1.05); 
+}
