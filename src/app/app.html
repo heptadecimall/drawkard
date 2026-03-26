@@ -312,3 +312,4 @@
 </div>
 <app-image-viewer *ngIf="showImageViewer" [src]="displayImageUrl" [alt]="cardData?.name" (click)="closeImageViewer()">
 </app-image-viewer>
+<app-loading-overlay *ngIf="isLoading"></app-loading-overlay>

@@ -5,10 +5,11 @@ import { CommonModule } from '@angular/common';
 import { from, of } from 'rxjs';
 import { concatMap, delay } from 'rxjs/operators';
 import { ImageViewerComponent } from './image-viewer/image-viewer';
+import { LoadingOverlayComponent } from "./loading-overlay/loading-overlay";
 
 @Component({
   selector: 'app-root',
-  imports: [CommonModule, ImageViewerComponent],
+  imports: [CommonModule, ImageViewerComponent, LoadingOverlayComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
@@ -74,7 +75,19 @@ export class App {
 
     from(tasks).pipe(
       concatMap(task => of(task()).pipe(delay(2000)))
-    ).subscribe();
+    ).subscribe({
+      next: () => {
+        console.log('Task completed...');
+      },
+      error: (err) => {
+        console.error('Loading failed', err);
+        this.isLoading = false; // Hide if something breaks
+      },
+      complete: () => {
+        console.log('All library data initialized!');
+        this.isLoading = false; // <--- HIDE THE OVERLAY HERE
+      }
+    });
 
   }
 
